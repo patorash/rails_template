@@ -13,4 +13,20 @@ run 'bundle install'
 generate 'rspec:install'
 remove_dir 'test'
 
+application do
+  %Q{
+    config.generators do |g|
+      g.orm :active_record
+      g.test_framework :rspec, fixture: true
+      g.view_specs false
+      g.controller_specs false
+      g.routing_specs false
+      g.helper_specs false
+      g.request_specs false
+      g.assets false
+      g.helper false
+    end
+  }
+end
+
 rake 'db:migrate'
