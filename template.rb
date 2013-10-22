@@ -19,6 +19,7 @@ end
 
 gem_group :development do
   gem 'pry-rails'
+  gem 'parallel_tests'
 end
 
 run 'bundle install'
@@ -55,11 +56,16 @@ end
 
 append_to_file '.rspec' do
   '--format documentation'
+  '--format ParallelTests::RSpec::FailuresLogger --out tmp/failing_specs.log'
 end
 
 generate 'controller', 'home index'
 route "root to: 'home#index'"
 
+run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.sqlite3/g\" config/database.yml"
 rake 'db:migrate'
-rake 'db:test:clone'
-rake 'spec'
+#rake 'db:test:clone'
+#rake 'spec'
+rake 'parallel:create'
+rake 'parallel:prepare'
+rake 'parallel:spec'
