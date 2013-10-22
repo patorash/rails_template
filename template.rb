@@ -1,6 +1,15 @@
 # coding: utf-8
 gem 'slim-rails'
 
+use_bootstrap = if yes?('Use Bootstrap?')
+                  uncomment_lines 'Gemfile', "gem 'therubyracer'"
+                  gem 'less-rails'
+                  gem 'twitter-bootstrap-rails'
+                  true
+                else
+                  false
+                end
+
 gem_group :development, :test do
   gem 'rspec-rails'
   gem "factory_girl_rails"
@@ -16,6 +25,18 @@ run 'bundle install'
 generate 'rspec:install'
 remove_dir 'test'
 
+if use_bootstrap
+  generate 'bootstrap:install', 'less'
+  if yes?("Use responsive layout?")
+    generate 'bootstrap:layout', 'application fluid'
+  else
+    generate 'bootstrap:layout', 'application fixed'
+  end
+  remove_file 'app/views/layouts/application.html.erb'
+end
+
+# Application settings
+# ----------------------------------------------------------------
 application do
   %Q{
     config.generators do |g|
@@ -36,7 +57,9 @@ append_to_file '.rspec' do
   '--format documentation'
 end
 
-generate 'model', 'user', 'name:string', 'age:integer'
+generate 'controller', 'home index'
+route "root to: 'home#index'"
+
 rake 'db:migrate'
 rake 'db:test:clone'
 rake 'spec'
