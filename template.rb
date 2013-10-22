@@ -30,4 +30,11 @@ application do
   }
 end
 
+append_to_file '.rspec' do
+  '--format documentation'
+end
+
+generate 'model', 'user', 'name:string', 'age:integer'
 rake 'db:migrate'
+rake 'db:test:clone'
+rake 'spec'
