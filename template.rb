@@ -13,6 +13,13 @@ use_bootstrap = if yes?('Use Bootstrap?')
                   false
                 end
 
+use_unicorn = if yes?('Use unicorn?')
+                uncomment_lines 'Gemfile', "gem 'unicorn'"
+                true
+              else
+                false
+              end
+
 gem 'whenever', require: false if yes?('Use whenever?')
 
 gem_group :development, :test do
@@ -73,6 +80,28 @@ end
 
 append_to_file '.rspec' do
   "--format documentation\n--format ParallelTests::RSpec::FailuresLogger --out tmp/failing_specs.log"
+end
+
+if use_unicorn
+  dir = File.dirname(__FILE__)
+  copy_file File.expand_path('config/unicorn.rb', dir), 'config/unicorn.rb'
+  create_file 'Procfile' do
+    body = <<EOS
+web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
+EOS
+  end
+else
+  create_file 'Procfile' do
+    body = <<EOS
+web: bundle exec rails server -p $PORT
+EOS
+  end
+end
+
+create_file '.foreman' do
+  body = <<EOS
+port: 3000
+EOS
 end
 
 generate 'controller', 'home index'
