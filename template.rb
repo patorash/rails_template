@@ -24,6 +24,13 @@ use_unicorn = if yes?('Use unicorn?')
 
 gem 'whenever', require: false if yes?('Use whenever?')
 
+use_heroku = if yes?('Use heroku?')
+               gem 'rails_12factor', group: :production
+               true
+             else
+               false
+             end
+
 gem_group :development, :test do
   gem 'rspec-rails'
   gem "factory_girl_rails"
@@ -46,7 +53,7 @@ gem_group :test do
   gem 'webmock', require: 'webmock/rspec'
 end
 
-run 'bundle install'
+run_bundle
 generate 'rspec:install'
 remove_dir 'test'
 
@@ -81,6 +88,14 @@ application do
   }
 end
 
+# Environment setting
+# ----------------------------------------------------------------
+comment_lines 'config/environments/production.rb', "config.serve_static_assets = false"
+environment 'config.serve_static_assets = true', env: 'production'
+
+
+# RSpec setting
+# ----------------------------------------------------------------
 remove_file 'spec'
 directory File.expand_path('spec', dir), 'spec', recursive: true
 
@@ -134,14 +149,26 @@ end
 generate 'controller', 'home index'
 route "root to: 'home#index'"
 
-run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.sqlite3/g\" config/database.yml"
+case gem_for_database
+  when 'pg', 'mysql2'
+    run "sed -i -e \"s/#{app_name}_test/#{app_name}_test<%= ENV[\\'TEST_ENV_NUMBER\\']%>/g\" config/database.yml"
+  when 'sqlite3'
+    run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.sqlite3/g\" config/database.yml"
+  else
+end
+
 run "cp config/database.yml config/database.yml.sample"
 
+case gem_for_database
+  when 'pg'
+    run "createuser -h localhost -d #{app_name}"
+  else
+end
+
 #generate 'scaffold', 'hoge', 'name:string', 'age:integer'
+rake 'db:create'
 rake 'db:migrate'
-#rake 'db:test:clone'
-#rake 'spec'
-#rake 'parallel:create'
+rake 'parallel:create'
 rake 'parallel:prepare'
 rake 'parallel:spec'
 
@@ -166,3 +193,11 @@ if yes?('Push Bitbucket?')
     say "#{git_uri}"
   end
 end
+
+if use_heroku
+  if yes?('Deploy heroku staging?')
+    run 'heroku create --remote staging'
+    git push: 'staging master'
+  end
+end
+exit
