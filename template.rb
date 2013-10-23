@@ -2,6 +2,8 @@
 gem 'slim-rails'
 gem "simple_form", github: 'plataformatec/simple_form', branch: 'master'
 gem "ransack"
+gem 'whenever', require: false if yes?('Use whenever?')
+
 
 use_bootstrap = if yes?('Use Bootstrap?')
                   uncomment_lines 'Gemfile', "gem 'therubyracer'"
