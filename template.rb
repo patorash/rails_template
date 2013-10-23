@@ -1,4 +1,6 @@
 # coding: utf-8
+dir = File.dirname(__FILE__)
+
 gem 'slim-rails'
 gem 'simple_form', github: 'plataformatec/simple_form', branch: 'master'
 gem 'ransack'
@@ -38,6 +40,7 @@ gem_group :development do
 end
 
 gem_group :test do
+  gem 'database_cleaner'
   gem 'timecop'
   gem 'launchy'
   gem 'webmock', require: 'webmock/rspec'
@@ -78,12 +81,14 @@ application do
   }
 end
 
+remove_file 'spec'
+directory File.expand_path('spec', dir), 'spec', recursive: true
+
 append_to_file '.rspec' do
   "--format documentation\n--format ParallelTests::RSpec::FailuresLogger --out tmp/failing_specs.log"
 end
 
 if use_unicorn
-  dir = File.dirname(__FILE__)
   copy_file File.expand_path('config/unicorn.rb', dir), 'config/unicorn.rb'
   create_file 'Procfile' do
     body = <<EOS
