@@ -1,6 +1,7 @@
 # coding: utf-8
 gem 'slim-rails'
 gem "simple_form", github: 'plataformatec/simple_form', branch: 'master'
+gem "ransack"
 
 use_bootstrap = if yes?('Use Bootstrap?')
                   uncomment_lines 'Gemfile', "gem 'therubyracer'"
