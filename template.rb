@@ -24,6 +24,9 @@ end
 gem_group :development do
   gem 'pry-rails'
   gem 'parallel_tests'
+  gem 'better_errors'
+  gem "binding_of_caller"
+  gem 'spring'
 end
 
 run 'bundle install'
