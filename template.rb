@@ -144,3 +144,25 @@ rake 'db:migrate'
 #rake 'parallel:create'
 rake 'parallel:prepare'
 rake 'parallel:spec'
+
+# git
+# ----------------------------------------------------------------
+git :init
+git add: "."
+git commit: %Q{ -m 'Initial commit' }
+
+# Bitbucket
+# ----------------------------------------------------------------
+if yes?('Push Bitbucket?')
+  git_uri = `git config remote.origin.url`.strip
+  if git_uri.size == 0
+    username = ask "What is your Bitbucket username?"
+    password = ask "What is your Bitbucket password?"
+    run "curl -k -X POST --user #{username}:#{password} 'https://api.bitbucket.org/1.0/repositories' -d 'name=#{app_name}&is_private=true'"
+    git remote: "add origin git@bitbucket.org:#{username}/#{app_name}.git"
+    git push: 'origin master'
+  else
+    say "Repository already exists:"
+    say "#{git_uri}"
+  end
+end
