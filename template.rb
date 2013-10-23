@@ -1,9 +1,8 @@
 # coding: utf-8
 gem 'slim-rails'
-gem "simple_form", github: 'plataformatec/simple_form', branch: 'master'
-gem "ransack"
-gem 'whenever', require: false if yes?('Use whenever?')
-
+gem 'simple_form', github: 'plataformatec/simple_form', branch: 'master'
+gem 'ransack'
+gem 'kaminari'
 
 use_bootstrap = if yes?('Use Bootstrap?')
                   uncomment_lines 'Gemfile', "gem 'therubyracer'"
@@ -13,6 +12,8 @@ use_bootstrap = if yes?('Use Bootstrap?')
                 else
                   false
                 end
+
+gem 'whenever', require: false if yes?('Use whenever?')
 
 gem_group :development, :test do
   gem 'rspec-rails'
@@ -27,6 +28,12 @@ gem_group :development do
   gem 'better_errors'
   gem "binding_of_caller"
   gem 'spring'
+end
+
+gem_group :test do
+  gem 'timecop'
+  gem 'launchy'
+  gem 'webmock', require: 'webmock/rspec'
 end
 
 run 'bundle install'
@@ -65,14 +72,14 @@ application do
 end
 
 append_to_file '.rspec' do
-  '--format documentation'
-  '--format ParallelTests::RSpec::FailuresLogger --out tmp/failing_specs.log'
+  "--format documentation\n--format ParallelTests::RSpec::FailuresLogger --out tmp/failing_specs.log"
 end
 
 generate 'controller', 'home index'
 route "root to: 'home#index'"
 
 run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.sqlite3/g\" config/database.yml"
+#generate 'scaffold', 'hoge', 'name:string', 'age:integer'
 rake 'db:migrate'
 #rake 'db:test:clone'
 #rake 'spec'
