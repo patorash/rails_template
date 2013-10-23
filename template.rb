@@ -109,10 +109,34 @@ port: 3000
 EOS
 end
 
+remove_file '.gitignore'
+create_file '.gitignore' do
+  body = <<EOS
+/.bundle
+/db/*.sqlite3
+/log/*.log
+/tmp
+.DS_Store
+/public/assets*
+/config/database.yml
+newrelic.yml
+.foreman
+.env
+doc/
+*.swp
+*~
+.project
+.idea
+.secret
+EOS
+end
+
 generate 'controller', 'home index'
 route "root to: 'home#index'"
 
 run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.sqlite3/g\" config/database.yml"
+run "cp config/database.yml config/database.yml.sample"
+
 #generate 'scaffold', 'hoge', 'name:string', 'age:integer'
 rake 'db:migrate'
 #rake 'db:test:clone'
