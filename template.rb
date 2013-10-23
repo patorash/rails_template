@@ -1,5 +1,6 @@
 # coding: utf-8
 gem 'slim-rails'
+gem "simple_form", github: 'plataformatec/simple_form', branch: 'master'
 
 use_bootstrap = if yes?('Use Bootstrap?')
                   uncomment_lines 'Gemfile', "gem 'therubyracer'"
@@ -28,12 +29,15 @@ remove_dir 'test'
 
 if use_bootstrap
   generate 'bootstrap:install', 'less'
+  generate 'simple_form:install', '--bootstrap'
   if yes?("Use responsive layout?")
     generate 'bootstrap:layout', 'application fluid'
   else
     generate 'bootstrap:layout', 'application fixed'
   end
   remove_file 'app/views/layouts/application.html.erb'
+else
+  generate 'simple_form:install'
 end
 
 # Application settings
@@ -66,6 +70,6 @@ run "sed -i -e \"s/db\\/test.sqlite3/db\\/test<%= ENV[\\'TEST_ENV_NUMBER\\']%>.s
 rake 'db:migrate'
 #rake 'db:test:clone'
 #rake 'spec'
-rake 'parallel:create'
+#rake 'parallel:create'
 rake 'parallel:prepare'
 rake 'parallel:spec'
