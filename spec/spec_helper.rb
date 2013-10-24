@@ -49,8 +49,8 @@ RSpec.configure do |config|
   config.include FeatureHelpers, type: :feature
 
   # ActiveDecorator
-  # config.include RSpec::Rails::DecoratorExampleGroup, type: :decorator, example_group: { file_path: config.escaped_path(%w[spec decorators])}
-  # config.include RSpec::Rails::DecoratorExampleGroup, type: :view, example_group: { file_path: config.escaped_path(%w[spec views])}
+  config.include RSpec::Rails::DecoratorExampleGroup, type: :decorator, example_group: { file_path: config.escaped_path(%w[spec decorators])}
+  config.include RSpec::Rails::DecoratorExampleGroup, type: :view, example_group: { file_path: config.escaped_path(%w[spec views])}
 
   config.before :each do
     # Devise
