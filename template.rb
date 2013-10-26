@@ -59,6 +59,7 @@ gem_group :development do
   gem 'better_errors'
   gem "binding_of_caller"
   gem 'spring'
+  gem 'letter_opener'
 end
 
 gem_group :test do
@@ -107,6 +108,7 @@ end
 # ----------------------------------------------------------------
 comment_lines 'config/environments/production.rb', "config.serve_static_assets = false"
 environment 'config.serve_static_assets = true', env: 'production'
+environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
 
 # RSpec setting
