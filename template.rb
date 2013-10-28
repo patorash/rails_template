@@ -26,6 +26,7 @@ use_unicorn = if yes?('Use unicorn?')
 gem 'whenever', require: false if yes?('Use whenever?')
 use_devise = if yes?('Use devise?')
                gem 'devise'
+               gem 'devise-i18n'
                devise_model = ask 'Please input devise model name. ex) User, Admin: '
                true
              else
