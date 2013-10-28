@@ -71,6 +71,7 @@ gem_group :test do
 end
 
 run_bundle
+generate 'kaminari:config'
 generate 'rspec:install'
 remove_dir 'test'
 
@@ -90,7 +91,11 @@ end
 # Application settings
 # ----------------------------------------------------------------
 application do
-  %Q{
+  %q{
+    config.active_record.default_timezone = :local
+    config.time_zone = 'Tokyo'
+    config.i18n.default_locale = :ja
+
     config.generators do |g|
       g.orm :active_record
       g.test_framework :rspec, fixture: true, fixture_replacement: :factory_girl
@@ -102,6 +107,8 @@ application do
       g.assets false
       g.helper false
     end
+
+    config.autoload_paths += %W(#{config.root}/lib)
   }
 end
 
@@ -260,6 +267,6 @@ if use_devise
   if use_bitbucket
     git push: 'origin master'
   end
-  puts "!!! Please set up #{devise_model} migration file and rake db:migrate !!!"
+  say "!!! Please set up #{devise_model} migration file and rake db:migrate !!!"
 end
 exit
