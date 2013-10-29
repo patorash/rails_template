@@ -61,6 +61,7 @@ gem_group :development do
   gem "binding_of_caller"
   gem 'spring'
   gem 'letter_opener'
+  gem 'annotate'
 end
 
 gem_group :test do
