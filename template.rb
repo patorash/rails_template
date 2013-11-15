@@ -86,7 +86,7 @@ if use_bootstrap
   end
   remove_file 'app/views/layouts/application.html.erb'
   append_to_file 'app/assets/stylesheets/application.css' do
-    "body { padding:60px }"
+    "body { padding-top:60px }"
   end
 else
   generate 'simple_form:install'
