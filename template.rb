@@ -83,6 +83,9 @@ if use_bootstrap
     generate 'bootstrap:layout', 'application fluid'
   else
     generate 'bootstrap:layout', 'application fixed'
+    append_to_file 'app/assets/stylesheets/application.css' do
+      "body { padding-top:60px }"
+    end
   end
   remove_file 'app/views/layouts/application.html.erb'
 else
