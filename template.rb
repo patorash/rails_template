@@ -6,15 +6,20 @@ gem 'simple_form', github: 'plataformatec/simple_form', branch: 'master'
 gem 'ransack'
 gem 'kaminari'
 gem 'active_decorator'
+gem 'js-routes'
+gem 'paranoia', '~> 2.0'
 
-use_bootstrap = if yes?('Use Bootstrap?')
-                  uncomment_lines 'Gemfile', "gem 'therubyracer'"
-                  gem 'less-rails'
-                  gem 'twitter-bootstrap-rails'
-                  true
-                else
-                  false
-                end
+use_bootstrap = false
+use_ionic = false
+if yes?('Use Bootstrap?')
+  uncomment_lines 'Gemfile', "gem 'therubyracer'"
+  gem 'less-rails'
+  gem 'twitter-bootstrap-rails'
+  use_bootstrap = true
+elsif yes?('Use ionic?')
+  gem 'ionic-rails'
+  use_ionic = true
+end
 
 use_unicorn = if yes?('Use unicorn?')
                 uncomment_lines 'Gemfile', "gem 'unicorn'"
@@ -49,7 +54,7 @@ use_heroku = if yes?('Use heroku?')
 
 gem_group :development, :test do
   gem 'rspec-rails'
-  gem "factory_girl_rails"
+  gem 'factory_girl_rails'
   gem 'capybara'
   gem 'capybara-webkit'
 end
@@ -58,10 +63,12 @@ gem_group :development do
   gem 'pry-rails'
   gem 'parallel_tests'
   gem 'better_errors'
-  gem "binding_of_caller"
+  gem 'binding_of_caller'
   gem 'spring'
   gem 'letter_opener'
   gem 'annotate'
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 gem_group :test do
@@ -79,15 +86,32 @@ remove_dir 'test'
 if use_bootstrap
   generate 'bootstrap:install', 'less'
   generate 'simple_form:install', '--bootstrap'
-  if yes?("Use responsive layout?")
+  if yes?('Use responsive layout?')
     generate 'bootstrap:layout', 'application fluid'
   else
     generate 'bootstrap:layout', 'application fixed'
     append_to_file 'app/assets/stylesheets/application.css' do
-      "body { padding-top:60px }"
+      'body { padding-top:60px }'
     end
   end
   remove_file 'app/views/layouts/application.html.erb'
+elsif use_ionic
+  append_to_file 'app/assets/javascripts/application.js' do
+    %q{
+//= require angular/angular
+//= require angular/angular-animate
+//= require angular/angular-cookies
+//= require angular/angular-loader
+//= require angular/angular-mocks
+//= require angular/angular-resource
+//= require angular/angular-route
+//= require angular/angular-sanitize
+//= require angular/angular-scenario
+//= require angular/angular-touch
+//= require ionic
+//= require ionic-angular
+    }
+  end
 else
   generate 'simple_form:install'
 end
@@ -118,7 +142,7 @@ end
 
 # Environment setting
 # ----------------------------------------------------------------
-comment_lines 'config/environments/production.rb', "config.serve_static_assets = false"
+comment_lines 'config/environments/production.rb', 'config.serve_static_assets = false'
 environment 'config.serve_static_assets = true', env: 'production'
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
