@@ -1,16 +1,19 @@
-# coding: utf-8
 dir = File.dirname(__FILE__)
 
 gem 'slim-rails'
-gem 'simple_form', github: 'plataformatec/simple_form', branch: 'master'
+gem 'simple_form'
+gem 'country_select'
 gem 'ransack'
 gem 'kaminari'
 gem 'active_decorator'
 
-use_bootstrap = if yes?('Use Bootstrap?')
+use_bootstrap = if yes?('Use bootstrap-sass?')
                   uncomment_lines 'Gemfile', "gem 'therubyracer'"
-                  gem 'less-rails'
-                  gem 'twitter-bootstrap-rails'
+                  # gem 'less-rails'
+                  # gem 'twitter-bootstrap-rails'
+                  gem 'bootstrap-sass', '~> 3.3.1'
+                  gem 'autoprefixer-rails'
+                  gem 'sprockets-rails', '2.1.4'
                   true
                 else
                   false
@@ -33,8 +36,8 @@ use_devise = if yes?('Use devise?')
                false
              end
 
-use_cancan = if yes?('Use cancan?')
-               gem 'cancan'
+use_cancan = if yes?('Use cancancan?')
+               gem 'cancancan'
                true
              else
                false
@@ -49,48 +52,48 @@ use_heroku = if yes?('Use heroku?')
 
 gem_group :development, :test do
   gem 'rspec-rails'
-  gem "factory_girl_rails"
+  gem 'factory_girl_rails'
   gem 'capybara'
-  gem 'capybara-webkit'
+  gem 'poltergeist'
 end
 
 gem_group :development do
   gem 'pry-rails'
   gem 'parallel_tests'
   gem 'better_errors'
-  gem "binding_of_caller"
+  gem 'binding_of_caller'
   gem 'spring'
   gem 'letter_opener'
   gem 'annotate'
 end
 
 gem_group :test do
-  gem 'database_cleaner'
+  gem 'database_rewinder'
   gem 'timecop'
   gem 'launchy'
   gem 'webmock', require: 'webmock/rspec'
 end
 
 run_bundle
-generate 'kaminari:config'
-generate 'rspec:install'
-remove_dir 'test'
-
 if use_bootstrap
-  generate 'bootstrap:install', 'less'
+  # generate 'bootstrap:install', 'less'
   generate 'simple_form:install', '--bootstrap'
-  if yes?("Use responsive layout?")
-    generate 'bootstrap:layout', 'application fluid'
-  else
-    generate 'bootstrap:layout', 'application fixed'
-    append_to_file 'app/assets/stylesheets/application.css' do
-      "body { padding-top:60px }"
-    end
-  end
+  # if yes?("Use responsive layout?")
+  #   generate 'bootstrap:layout', 'application fluid'
+  # else
+  #   generate 'bootstrap:layout', 'application fixed'
+  #   append_to_file 'app/assets/stylesheets/application.css' do
+  #     "body { padding-top:60px }"
+  #   end
+  # end
   remove_file 'app/views/layouts/application.html.erb'
 else
   generate 'simple_form:install'
 end
+generate 'kaminari:config'
+generate 'rspec:install'
+remove_dir 'test'
+
 
 # Application settings
 # ----------------------------------------------------------------
@@ -125,15 +128,15 @@ environment 'config.action_mailer.delivery_method = :letter_opener', env: 'devel
 
 # RSpec setting
 # ----------------------------------------------------------------
-remove_file 'spec'
-directory File.expand_path('spec', dir), 'spec', recursive: true
+# remove_file 'spec'
+# directory File.expand_path('spec', dir), 'spec', recursive: true
 
 if use_devise
-  uncomment_lines 'spec/spec_helper.rb', 'include Warden::Test::Helpers'
-  uncomment_lines 'spec/spec_helper.rb', 'config.include Devise::TestHelpers, type: :controller'
-  uncomment_lines 'spec/spec_helper.rb', 'config.include Devise::TestHelpers, type: :view'
-  uncomment_lines 'spec/spec_helper.rb', 'Warden.test_mode!'
-  uncomment_lines 'spec/spec_helper.rb', 'Warden.test_reset!'
+  # uncomment_lines 'spec/spec_helper.rb', 'include Warden::Test::Helpers'
+  # uncomment_lines 'spec/spec_helper.rb', 'config.include Devise::TestHelpers, type: :controller'
+  # uncomment_lines 'spec/spec_helper.rb', 'config.include Devise::TestHelpers, type: :view'
+  # uncomment_lines 'spec/spec_helper.rb', 'Warden.test_mode!'
+  # uncomment_lines 'spec/spec_helper.rb', 'Warden.test_reset!'
   generate 'devise:install'
 end
 
@@ -227,7 +230,6 @@ rake 'db:drop'
 rake 'db:create'
 rake 'db:migrate'
 rake 'parallel:create'
-rake 'parallel:prepare'
 
 # git
 # ----------------------------------------------------------------
